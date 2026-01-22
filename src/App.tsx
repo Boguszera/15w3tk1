@@ -43,7 +43,7 @@ function App() {
     <>
       {isLoading && <LoadingScreen onLoadComplete={handleLoadComplete} />}
       
-      <div className="flex h-screen bg-gray-900 overflow-hidden">
+      <div className="flex h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-hidden">
         {!isFullscreen && <ConfigPanel />}
         
         <div className="flex-1 relative">
@@ -52,9 +52,9 @@ function App() {
           {/* Fullscreen toggle button */}
           <button
             onClick={toggleFullscreen}
-            className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg transition-colors z-10"
+            className="absolute top-6 right-6 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600/90 to-blue-600/90 hover:from-purple-700 hover:to-blue-700 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 z-10 border border-white/10"
           >
-            {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            {isFullscreen ? '✕ Exit Fullscreen' : '⛶ Fullscreen'}
           </button>
         </div>
       </div>
