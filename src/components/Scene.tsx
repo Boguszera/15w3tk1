@@ -75,9 +75,9 @@ export function Scene() {
       {/* Camera reset button */}
       <button
         onClick={resetCamera}
-        className="absolute bottom-6 left-6 px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600/90 to-blue-600/90 hover:from-purple-700 hover:to-blue-700 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 border border-white/10"
+        className="absolute bottom-6 left-6 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600/90 to-blue-600/90 hover:from-purple-700 hover:to-blue-700 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 border border-white/10 text-sm sm:text-base"
       >
-        🔄 Reset Camera
+        🔄 <span className="hidden sm:inline">Reset Camera</span>
       </button>
     </div>
   );

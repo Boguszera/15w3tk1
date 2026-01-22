@@ -6,7 +6,7 @@ export function ConfigPanel() {
   const resetConfig = useConfigStore((state) => state.resetConfig);
 
   return (
-    <div className="w-96 h-full bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white overflow-y-auto shadow-2xl border-r border-gray-800 custom-scrollbar animate-slide-in">
+    <div className="w-full sm:w-96 h-full bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white overflow-y-auto shadow-2xl border-r border-gray-800 custom-scrollbar animate-slide-in">
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-700">
