@@ -60,4 +60,21 @@ body {
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-in-out;
   }
+
+  /* Shake animation for reset button */
+  @keyframes shake {
+    0%, 100% { 
+      transform: translateX(0) scale(1.05); 
+    }
+    25% { 
+      transform: translateX(-2px) scale(1.05); 
+    }
+    75% { 
+      transform: translateX(2px) scale(1.05); 
+    }
+  }
+
+  .animate-on-hover:hover {
+    animation: shake 0.3s ease-in-out;
+  }
 }
