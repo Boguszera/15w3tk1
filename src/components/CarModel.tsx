@@ -1,21 +1,71 @@
-import { useRef, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useConfigStore } from '../store/configStore';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
+
+type GLTFNodes = Record<string, THREE.Object3D>;
+
+type GLTFResult = {
+  nodes: GLTFNodes;
+  scene: THREE.Group;
+};
+
+function setMaterialDeep(object: THREE.Object3D | undefined, material: THREE.Material) {
+  if (!object) return;
+
+  object.traverse((o) => {
+    if ((o as THREE.Mesh).isMesh) {
+      const mesh = o as THREE.Mesh;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.material = material;
+    }
+  });
+}
+
+function getFirstMeshMaterial(object: THREE.Object3D | undefined) {
+  let mat: THREE.MeshStandardMaterial | undefined;
+  if (!object) return mat;
+
+  object.traverse((o) => {
+    if (mat) return;
+    if ((o as THREE.Mesh).isMesh) {
+      const mesh = o as THREE.Mesh;
+      const m = mesh.material as THREE.Material | THREE.Material[];
+      const first = Array.isArray(m) ? m[0] : m;
+      if (first && (first as THREE.MeshStandardMaterial).isMeshStandardMaterial) {
+        mat = first as THREE.MeshStandardMaterial;
+      }
+    }
+  });
+
+  return mat;
+}
 
 export function CarModel() {
   const config = useConfigStore((state) => state.config);
-  const bodyRef = useRef<THREE.Mesh>(null);
-  const spoilerRef = useRef<THREE.Mesh>(null);
+
+  const { nodes, scene } = useGLTF('/car_model.glb') as unknown as GLTFResult;
+
+  // Poprawne nazwy z Twojego loga:
+  const bodyObj = nodes['body'];
+  const wheelsObj = nodes['wheels'];
+  const windowsObj = nodes['windows_1'];
+  const metalObj = nodes['metal_elements'];
+  const spoilerObj = nodes['spoiler'];
+
+  // UWAGA: u Ciebie jest "frontligts" (literówka w GLB)
+  const frontLightsObj = nodes['frontligts'] ?? nodes['frontlamps'];
+  const backLightsObj = nodes['backlamps'] ?? nodes['backlights'] ?? nodes['backligts'];
 
   // Body material
   const bodyMaterial = useMemo(() => {
-    const material = new THREE.MeshStandardMaterial({
+    return new THREE.MeshStandardMaterial({
       color: config.bodyColor,
       roughness: config.bodyMaterial === 'matte' ? 0.9 : 0.2,
       metalness: 0.2,
     });
-    return material;
   }, [config.bodyColor, config.bodyMaterial]);
 
   // Wheel material
@@ -37,6 +87,7 @@ export function CarModel() {
       roughness: 0.1,
       metalness: 0,
       opacity: 1 - config.windowTransparency * 0.8,
+      depthWrite: false,
     });
   }, [config.windowTransparency, config.windowTint]);
 
@@ -56,21 +107,14 @@ export function CarModel() {
       metalness = 0.3;
     }
 
-    return new THREE.MeshStandardMaterial({
-      color,
-      roughness,
-      metalness,
-    });
+    return new THREE.MeshStandardMaterial({ color, roughness, metalness });
   }, [config.spoilerColor, config.bodyColor, config.bodyMaterial]);
 
   // Metal elements material
   const metalMaterial = useMemo(() => {
     let color = '#ffffff';
-    if (config.metalType === 'brushed') {
-      color = '#cccccc';
-    } else if (config.metalType === 'black') {
-      color = '#1a1a1a';
-    }
+    if (config.metalType === 'brushed') color = '#cccccc';
+    else if (config.metalType === 'black') color = '#1a1a1a';
 
     return new THREE.MeshStandardMaterial({
       color,
@@ -98,113 +142,71 @@ export function CarModel() {
     });
   }, [config.backLampsOn, config.backLampsIntensity, config.backLampsColor]);
 
-  // Animate materials for smooth transitions
+  // Przypinamy materiały do całych "grup" (rekurencyjnie do mesh children)
+  useEffect(() => {
+    setMaterialDeep(bodyObj, bodyMaterial);
+    setMaterialDeep(wheelsObj, wheelMaterial);
+    setMaterialDeep(windowsObj, windowMaterial);
+    setMaterialDeep(metalObj, metalMaterial);
+
+    // lampy
+    setMaterialDeep(frontLightsObj, frontLampMaterial);
+    setMaterialDeep(backLightsObj, backLampMaterial);
+
+    // spoiler tylko jak ma być widoczny
+    if (config.spoilerVisible) setMaterialDeep(spoilerObj, spoilerMaterial);
+  }, [
+    bodyObj,
+    wheelsObj,
+    windowsObj,
+    metalObj,
+    spoilerObj,
+    frontLightsObj,
+    backLightsObj,
+    bodyMaterial,
+    wheelMaterial,
+    windowMaterial,
+    metalMaterial,
+    spoilerMaterial,
+    frontLampMaterial,
+    backLampMaterial,
+    config.spoilerVisible,
+  ]);
+
+  // Smooth transition dla koloru karoserii:
+  // lerpujemy kolor na pierwszym MeshStandardMaterial znalezionym w body
+  const bodyMatRef = useRef<THREE.MeshStandardMaterial | undefined>(undefined);
+
+  useEffect(() => {
+    bodyMatRef.current = getFirstMeshMaterial(bodyObj) ?? undefined;
+  }, [bodyObj]);
+
   useFrame(() => {
-    if (bodyRef.current) {
-      const material = bodyRef.current.material as THREE.MeshStandardMaterial;
-      const targetColor = new THREE.Color(config.bodyColor);
-      material.color.lerp(targetColor, 0.1);
-    }
+    const mat = bodyMatRef.current;
+    if (!mat) return;
+    const target = new THREE.Color(config.bodyColor);
+    mat.color.lerp(target, 0.1);
   });
 
+  // Debug (możesz potem usunąć)
+  useEffect(() => {
+    console.log('GLB nodes keys:', Object.keys(nodes));
+  }, [nodes]);
+
+  // Renderujemy obiekty jako primitive (bo to mogą być Group, nie Mesh)
   return (
     <group>
-      {/* Body - main car body */}
-      <mesh ref={bodyRef} position={[0, 0.6, 0]} castShadow receiveShadow>
-        <boxGeometry args={[2, 0.8, 4]} />
-        <primitive object={bodyMaterial} />
-      </mesh>
+      {bodyObj && <primitive object={bodyObj} />}
+      {wheelsObj && <primitive object={wheelsObj} />}
+      {windowsObj && <primitive object={windowsObj} />}
+      {metalObj && <primitive object={metalObj} />}
 
-      {/* Cabin */}
-      <mesh position={[0, 1.2, -0.3]} castShadow>
-        <boxGeometry args={[1.6, 0.7, 2]} />
-        <primitive object={bodyMaterial} />
-      </mesh>
+      {frontLightsObj && <primitive object={frontLightsObj} />}
+      {backLightsObj && <primitive object={backLightsObj} />}
 
-      {/* Windows */}
-      <mesh position={[0.81, 1.2, -0.3]} castShadow>
-        <boxGeometry args={[0.02, 0.6, 1.8]} />
-        <primitive object={windowMaterial} />
-      </mesh>
-      <mesh position={[-0.81, 1.2, -0.3]} castShadow>
-        <boxGeometry args={[0.02, 0.6, 1.8]} />
-        <primitive object={windowMaterial} />
-      </mesh>
-      <mesh position={[0, 1.2, 0.6]} castShadow>
-        <boxGeometry args={[1.6, 0.6, 0.02]} />
-        <primitive object={windowMaterial} />
-      </mesh>
-      <mesh position={[0, 1.2, -1.2]} castShadow>
-        <boxGeometry args={[1.6, 0.6, 0.02]} />
-        <primitive object={windowMaterial} />
-      </mesh>
-
-      {/* Wheels */}
-      {[
-        [-0.8, 0.3, 1.3],
-        [0.8, 0.3, 1.3],
-        [-0.8, 0.3, -1.3],
-        [0.8, 0.3, -1.3],
-      ].map((pos, i) => (
-        <group key={i} position={pos as [number, number, number]}>
-          <mesh rotation={[0, 0, Math.PI / 2]} castShadow>
-            <cylinderGeometry args={[0.4, 0.4, 0.3, 32]} />
-            <primitive object={wheelMaterial} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* Front lamps */}
-      <mesh position={[0.6, 0.6, 2.1]} castShadow>
-        <boxGeometry args={[0.3, 0.2, 0.1]} />
-        <primitive object={frontLampMaterial} />
-      </mesh>
-      <mesh position={[-0.6, 0.6, 2.1]} castShadow>
-        <boxGeometry args={[0.3, 0.2, 0.1]} />
-        <primitive object={frontLampMaterial} />
-      </mesh>
-
-      {/* Back lamps */}
-      <mesh position={[0.6, 0.6, -2.1]} castShadow>
-        <boxGeometry args={[0.3, 0.2, 0.1]} />
-        <primitive object={backLampMaterial} />
-      </mesh>
-      <mesh position={[-0.6, 0.6, -2.1]} castShadow>
-        <boxGeometry args={[0.3, 0.2, 0.1]} />
-        <primitive object={backLampMaterial} />
-      </mesh>
-
-      {/* Spoiler */}
-      {config.spoilerVisible && (
-        <group ref={spoilerRef}>
-          <mesh position={[0, 1.3, -1.8]} castShadow>
-            <boxGeometry args={[1.6, 0.1, 0.4]} />
-            <primitive object={spoilerMaterial} />
-          </mesh>
-          <mesh position={[0.6, 1.1, -1.8]} castShadow>
-            <boxGeometry args={[0.1, 0.3, 0.3]} />
-            <primitive object={spoilerMaterial} />
-          </mesh>
-          <mesh position={[-0.6, 1.1, -1.8]} castShadow>
-            <boxGeometry args={[0.1, 0.3, 0.3]} />
-            <primitive object={spoilerMaterial} />
-          </mesh>
-        </group>
-      )}
-
-      {/* Metal elements - grille, mirrors, etc. */}
-      <mesh position={[0, 0.5, 2.05]} castShadow>
-        <boxGeometry args={[1.2, 0.3, 0.05]} />
-        <primitive object={metalMaterial} />
-      </mesh>
-      <mesh position={[0.95, 1.0, 0]} castShadow>
-        <boxGeometry args={[0.1, 0.15, 0.2]} />
-        <primitive object={metalMaterial} />
-      </mesh>
-      <mesh position={[-0.95, 1.0, 0]} castShadow>
-        <boxGeometry args={[0.1, 0.15, 0.2]} />
-        <primitive object={metalMaterial} />
-      </mesh>
+      {config.spoilerVisible && spoilerObj && <primitive object={spoilerObj} />}
     </group>
   );
 }
+
+useGLTF.preload('/car_model.glb');
