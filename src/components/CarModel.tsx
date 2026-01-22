@@ -46,7 +46,7 @@ function getFirstMeshMaterial(object: THREE.Object3D | undefined) {
 export function CarModel() {
   const config = useConfigStore((state) => state.config);
 
-  const { nodes, scene } = useGLTF('/car_model.glb') as unknown as GLTFResult;
+  const { nodes } = useGLTF('/car_model.glb') as unknown as GLTFResult;
 
   // Poprawne nazwy z Twojego loga:
   const bodyObj = nodes['body'];

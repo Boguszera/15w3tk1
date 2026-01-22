@@ -6,51 +6,59 @@ export function ConfigPanel() {
   const resetConfig = useConfigStore((state) => state.resetConfig);
 
   return (
-    <div className="w-80 h-full bg-gray-900 text-white overflow-y-auto shadow-2xl">
+    <div className="w-full sm:w-96 h-full bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white overflow-y-auto shadow-2xl border-r border-gray-800 custom-scrollbar animate-slide-in">
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Car Configurator</h2>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-700">
+          <div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              Car Configurator
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">Customize your dream car</p>
+          </div>
           <button
             onClick={resetConfig}
-            className="text-sm bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+            className="text-sm bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
           >
             Reset
           </button>
         </div>
 
         {/* Body Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Body</h3>
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">🎨</span> Body
+          </h3>
           
-          <div>
-            <label className="block text-sm mb-2">Paint Color</label>
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">Paint Color</label>
             <input
               type="color"
               value={config.bodyColor}
               onChange={(e) => updateConfig({ bodyColor: e.target.value })}
-              className="w-full h-10 rounded cursor-pointer"
+              className="w-full h-12 rounded-lg cursor-pointer"
             />
           </div>
 
-          <div>
-            <label className="block text-sm mb-2">Material</label>
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">Material Finish</label>
+            <div className="flex gap-3">
               <button
                 onClick={() => updateConfig({ bodyMaterial: 'matte' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
                   config.bodyMaterial === 'matte'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Matte
               </button>
               <button
                 onClick={() => updateConfig({ bodyMaterial: 'glossy' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
                   config.bodyMaterial === 'glossy'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Glossy
@@ -60,45 +68,49 @@ export function ConfigPanel() {
         </section>
 
         {/* Wheels Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Wheels</h3>
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">⚙️</span> Wheels
+          </h3>
           
-          <div>
-            <label className="block text-sm mb-2">Wheel Color</label>
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">Wheel Color</label>
             <input
               type="color"
               value={config.wheelColor}
               onChange={(e) => updateConfig({ wheelColor: e.target.value })}
-              className="w-full h-10 rounded cursor-pointer"
+              className="w-full h-12 rounded-lg cursor-pointer"
             />
           </div>
         </section>
 
         {/* Front Lamps Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Front Lamps</h3>
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">💡</span> Front Lamps
+          </h3>
           
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Lights On</label>
+          <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
+            <label className="text-sm font-medium text-gray-300">Lights On</label>
             <button
               onClick={() => updateConfig({ frontLampsOn: !config.frontLampsOn })}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                config.frontLampsOn ? 'bg-blue-600' : 'bg-gray-700'
+              className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
+                config.frontLampsOn ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/50' : 'bg-gray-700'
               }`}
             >
               <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  config.frontLampsOn ? 'transform translate-x-6' : ''
+                className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-lg ${
+                  config.frontLampsOn ? 'transform translate-x-7' : ''
                 }`}
               />
             </button>
           </div>
 
           {config.frontLampsOn && (
-            <>
-              <div>
-                <label className="block text-sm mb-2">
-                  Intensity: {config.frontLampsIntensity.toFixed(1)}
+            <div className="space-y-4 animate-slide-up">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                  Intensity: <span className="text-purple-400 font-semibold">{config.frontLampsIntensity.toFixed(1)}</span>
                 </label>
                 <input
                   type="range"
@@ -113,44 +125,46 @@ export function ConfigPanel() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm mb-2">Light Color</label>
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-300">Light Color</label>
                 <input
                   type="color"
                   value={config.frontLampsColor}
                   onChange={(e) => updateConfig({ frontLampsColor: e.target.value })}
-                  className="w-full h-10 rounded cursor-pointer"
+                  className="w-full h-12 rounded-lg cursor-pointer"
                 />
               </div>
-            </>
+            </div>
           )}
         </section>
 
         {/* Back Lamps Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Back Lamps</h3>
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">🔴</span> Back Lamps
+          </h3>
           
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Lights On</label>
+          <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
+            <label className="text-sm font-medium text-gray-300">Lights On</label>
             <button
               onClick={() => updateConfig({ backLampsOn: !config.backLampsOn })}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                config.backLampsOn ? 'bg-blue-600' : 'bg-gray-700'
+              className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
+                config.backLampsOn ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/50' : 'bg-gray-700'
               }`}
             >
               <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  config.backLampsOn ? 'transform translate-x-6' : ''
+                className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-lg ${
+                  config.backLampsOn ? 'transform translate-x-7' : ''
                 }`}
               />
             </button>
           </div>
 
           {config.backLampsOn && (
-            <>
-              <div>
-                <label className="block text-sm mb-2">
-                  Intensity: {config.backLampsIntensity.toFixed(1)}
+            <div className="space-y-4 animate-slide-up">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                  Intensity: <span className="text-purple-400 font-semibold">{config.backLampsIntensity.toFixed(1)}</span>
                 </label>
                 <input
                   type="range"
@@ -165,26 +179,28 @@ export function ConfigPanel() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm mb-2">Light Color</label>
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-300">Light Color</label>
                 <input
                   type="color"
                   value={config.backLampsColor}
                   onChange={(e) => updateConfig({ backLampsColor: e.target.value })}
-                  className="w-full h-10 rounded cursor-pointer"
+                  className="w-full h-12 rounded-lg cursor-pointer"
                 />
               </div>
-            </>
+            </div>
           )}
         </section>
 
         {/* Windows Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Windows</h3>
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">🪟</span> Windows
+          </h3>
           
-          <div>
-            <label className="block text-sm mb-2">
-              Transparency: {config.windowTransparency.toFixed(2)}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Transparency: <span className="text-purple-400 font-semibold">{config.windowTransparency.toFixed(2)}</span>
             </label>
             <input
               type="range"
@@ -199,25 +215,25 @@ export function ConfigPanel() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm mb-2">Tint</label>
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">Window Tint</label>
+            <div className="flex gap-3">
               <button
                 onClick={() => updateConfig({ windowTint: 'clear' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
                   config.windowTint === 'clear'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Clear
               </button>
               <button
                 onClick={() => updateConfig({ windowTint: 'tinted' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
                   config.windowTint === 'tinted'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Tinted
@@ -227,55 +243,57 @@ export function ConfigPanel() {
         </section>
 
         {/* Spoiler Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">Spoiler</h3>
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">🏎️</span> Spoiler
+          </h3>
           
-          <div className="flex items-center justify-between">
-            <label className="text-sm">Visible</label>
+          <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
+            <label className="text-sm font-medium text-gray-300">Visible</label>
             <button
               onClick={() => updateConfig({ spoilerVisible: !config.spoilerVisible })}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                config.spoilerVisible ? 'bg-blue-600' : 'bg-gray-700'
+              className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
+                config.spoilerVisible ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/50' : 'bg-gray-700'
               }`}
             >
               <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  config.spoilerVisible ? 'transform translate-x-6' : ''
+                className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-lg ${
+                  config.spoilerVisible ? 'transform translate-x-7' : ''
                 }`}
               />
             </button>
           </div>
 
           {config.spoilerVisible && (
-            <div>
-              <label className="block text-sm mb-2">Color</label>
-              <div className="flex gap-2">
+            <div className="space-y-3 animate-slide-up">
+              <label className="block text-sm font-medium text-gray-300">Spoiler Color</label>
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => updateConfig({ spoilerColor: 'body' })}
-                  className={`flex-1 py-2 px-4 rounded transition-colors ${
+                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
                     config.spoilerColor === 'body'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 hover:bg-gray-600'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                   }`}
                 >
                   Body
                 </button>
                 <button
                   onClick={() => updateConfig({ spoilerColor: 'carbon' })}
-                  className={`flex-1 py-2 px-4 rounded transition-colors ${
+                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
                     config.spoilerColor === 'carbon'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 hover:bg-gray-600'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                   }`}
                 >
                   Carbon
                 </button>
                 <button
                   onClick={() => updateConfig({ spoilerColor: 'black' })}
-                  className={`flex-1 py-2 px-4 rounded transition-colors ${
+                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
                     config.spoilerColor === 'black'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 hover:bg-gray-600'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                   }`}
                 >
                   Black
@@ -286,40 +304,40 @@ export function ConfigPanel() {
         </section>
 
         {/* Metal Elements Section */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">
-            Metal Elements
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 mb-6">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-gray-300 to-gray-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">⚡</span> Metal Elements
           </h3>
           
-          <div>
-            <label className="block text-sm mb-2">Material Type</label>
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300">Material Type</label>
+            <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => updateConfig({ metalType: 'chrome' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
                   config.metalType === 'chrome'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Chrome
               </button>
               <button
                 onClick={() => updateConfig({ metalType: 'brushed' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
                   config.metalType === 'brushed'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Brushed
               </button>
               <button
                 onClick={() => updateConfig({ metalType: 'black' })}
-                className={`flex-1 py-2 px-4 rounded transition-colors ${
+                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
                   config.metalType === 'black'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
                 }`}
               >
                 Black
@@ -327,9 +345,9 @@ export function ConfigPanel() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm mb-2">
-              Roughness: {config.metalRoughness.toFixed(2)}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Roughness: <span className="text-purple-400 font-semibold">{config.metalRoughness.toFixed(2)}</span>
             </label>
             <input
               type="range"
@@ -344,9 +362,9 @@ export function ConfigPanel() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm mb-2">
-              Metalness: {config.metalMetalness.toFixed(2)}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Metalness: <span className="text-purple-400 font-semibold">{config.metalMetalness.toFixed(2)}</span>
             </label>
             <input
               type="range"
