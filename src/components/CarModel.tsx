@@ -57,7 +57,15 @@ export function CarModel() {
 
   // UWAGA: u Ciebie jest "frontligts" (literówka w GLB)
   const frontLightsObj = nodes['frontligts'] ?? nodes['frontlamps'];
-  const backLightsObj = nodes['backlamps'];
+  // Back lamps: try 'backlamps' first, then fallback to 'geometry_0' which appears to be the back lights in this model
+  const backLightsObj = nodes['backlamps'] ?? nodes['geometry_0'];
+  
+  // Debug: warn if backlamps node is not found with primary name
+  if (!nodes['backlamps'] && !nodes['geometry_0']) {
+    console.warn('Back lamps node not found in model. Available nodes:', Object.keys(nodes));
+  } else if (!nodes['backlamps']) {
+    console.info('Using geometry_0 as fallback for back lamps');
+  }
 
   // Body material
   const bodyMaterial = useMemo(() => {
