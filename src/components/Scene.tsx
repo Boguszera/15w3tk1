@@ -1,12 +1,16 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows } from '@react-three/drei';
 import { CarModel } from './CarModel';
-import { Suspense, useRef } from 'react';
+import { Suspense, useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { useConfigStore } from '../store/configStore';
+import { sceneConfigs } from '../types/CarConfiguration';
 
 export function Scene() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
+  const currentScene = useConfigStore((state) => state.config.currentScene);
+  const sceneConfig = sceneConfigs[currentScene];
 
   const resetCamera = () => {
     if (controlsRef.current) {
@@ -14,20 +18,28 @@ export function Scene() {
     }
   };
 
+  // Update camera position when scene changes
+  useEffect(() => {
+    if (controlsRef.current) {
+      controlsRef.current.reset();
+    }
+  }, [currentScene]);
+
   return (
     <div className="relative w-full h-full">
       <Canvas
-        camera={{ position: [5, 3, 5], fov: 50 }}
+        camera={{ position: sceneConfig.cameraPosition, fov: 50 }}
         shadows
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+        key={currentScene}
       >
-        <color attach="background" args={['#1a1a1a']} />
+        <color attach="background" args={[sceneConfig.backgroundColor]} />
         
         {/* Lighting */}
-        <ambientLight intensity={0.6} />
+        <ambientLight intensity={sceneConfig.ambientLightIntensity} />
         <directionalLight
           position={[5, 10, 5]}
-          intensity={1.5}
+          intensity={sceneConfig.directionalLightIntensity}
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
@@ -47,7 +59,7 @@ export function Scene() {
         {/* Ground */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
           <planeGeometry args={[50, 50]} />
-          <meshStandardMaterial color="#2a2a2a" />
+          <meshStandardMaterial color={sceneConfig.groundColor} />
         </mesh>
         
         {/* Contact shadows for better visual effect */}
