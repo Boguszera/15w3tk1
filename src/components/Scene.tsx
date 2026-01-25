@@ -1,6 +1,8 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, ContactShadows } from '@react-three/drei';
 import { CarModel } from './CarModel';
+import { GarageScene } from './GarageScene';
+import { RacetrackScene } from './RacetrackScene';
 import { Suspense, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useConfigStore } from '../store/configStore';
@@ -35,32 +37,50 @@ export function Scene() {
       >
         <color attach="background" args={[sceneConfig.backgroundColor]} />
         
-        {/* Lighting */}
+        {/* Base Lighting - Applied to all scenes */}
         <ambientLight intensity={sceneConfig.ambientLightIntensity} />
-        <directionalLight
-          position={[5, 10, 5]}
-          intensity={sceneConfig.directionalLightIntensity}
-          castShadow
-          shadow-mapSize-width={2048}
-          shadow-mapSize-height={2048}
-          shadow-camera-far={50}
-          shadow-camera-left={-10}
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-        />
-        <directionalLight position={[-5, 5, -5]} intensity={0.5} />
-        <pointLight position={[0, 5, 0]} intensity={0.3} />
+        
+        {/* Scene-specific rendering */}
+        {currentScene === 'default' && (
+          <>
+            <directionalLight
+              position={[5, 10, 5]}
+              intensity={sceneConfig.directionalLightIntensity}
+              castShadow
+              shadow-mapSize-width={2048}
+              shadow-mapSize-height={2048}
+              shadow-camera-far={50}
+              shadow-camera-left={-10}
+              shadow-camera-right={10}
+              shadow-camera-top={10}
+              shadow-camera-bottom={-10}
+            />
+            <directionalLight position={[-5, 5, -5]} intensity={0.5} />
+            <pointLight position={[0, 5, 0]} intensity={0.3} />
+            
+            {/* Default Ground */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+              <planeGeometry args={[50, 50]} />
+              <meshStandardMaterial color={sceneConfig.groundColor} />
+            </mesh>
+          </>
+        )}
+
+        {currentScene === 'garage' && (
+          <>
+            <GarageScene />
+          </>
+        )}
+
+        {currentScene === 'racetrack' && (
+          <>
+            <RacetrackScene />
+          </>
+        )}
         
         <Suspense fallback={null}>
           <CarModel />
         </Suspense>
-        
-        {/* Ground */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-          <planeGeometry args={[50, 50]} />
-          <meshStandardMaterial color={sceneConfig.groundColor} />
-        </mesh>
         
         {/* Contact shadows for better visual effect */}
         <ContactShadows
