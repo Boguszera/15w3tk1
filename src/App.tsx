@@ -75,7 +75,7 @@ function App() {
         )}
         
         <div className="flex-1 relative">
-          <Scene />
+          <Scene currentScene={'default'} />
           
           {/* Fullscreen toggle button */}
           <button
