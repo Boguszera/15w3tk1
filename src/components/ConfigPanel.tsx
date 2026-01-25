@@ -24,6 +24,46 @@ export function ConfigPanel() {
           </button>
         </div>
 
+        {/* Scene Selection */}
+        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent flex items-center gap-2">
+            <span className="text-2xl">🌍</span> Scene
+          </h3>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => updateConfig({ currentScene: 'default' })}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                config.currentScene === 'default'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+              }`}
+            >
+              Default
+            </button>
+            <button
+              onClick={() => updateConfig({ currentScene: 'garage' })}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                config.currentScene === 'garage'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+              }`}
+            >
+              Garage
+            </button>
+            <button
+              onClick={() => updateConfig({ currentScene: 'racetrack' })}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                config.currentScene === 'racetrack'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+              }`}
+            >
+              Racetrack
+            </button>
+          </div>
+        </section>
+
         {/* Body Section */}
         <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
           <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
