@@ -6,6 +6,20 @@ export function GarageScene() {
 
   return (
     <group ref={groupRef}>
+      {/* Directional Light for shadows */}
+      <directionalLight
+        position={[5, 10, 5]}
+        intensity={2.0}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={50}
+        shadow-camera-left={-10}
+        shadow-camera-right={10}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10}
+      />
+
       {/* Concrete Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
