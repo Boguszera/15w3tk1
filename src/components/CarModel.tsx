@@ -57,7 +57,10 @@ export function CarModel() {
 
   // UWAGA: u Ciebie jest "frontligts" (literówka w GLB)
   const frontLightsObj = nodes['frontligts'] ?? nodes['frontlamps'];
-  // Back lamps: try 'backlamps' first, then fallback to 'geometry_0' which appears to be the back lights in this model
+  
+  // Back lamps: The GLB model doesn't have a node named 'backlamps'
+  // Using 'geometry_0' as fallback - this appears to be the back lights mesh in the exported model
+  // NOTE: If the model is re-exported from Blender, the back lamps mesh should be named 'backlamps' for consistency
   const backLightsObj = nodes['backlamps'] ?? nodes['geometry_0'];
   
   // Debug: warn if backlamps node is not found with primary name
