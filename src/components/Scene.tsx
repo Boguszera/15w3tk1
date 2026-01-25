@@ -5,13 +5,25 @@ import { GarageScene } from './GarageScene';
 import { RacetrackScene } from './RacetrackScene';
 import { Suspense, useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { useConfigStore } from '../store/configStore';
+// import { useConfigStore } from '../store/configStore'; // To na razie wyłączamy, bo używamy propsów
 import { sceneConfigs } from '../types/CarConfiguration';
 
-export function Scene() {
+// 1. Definiujemy typy scen (muszą pasować do kluczy w sceneConfigs)
+export type SceneType = 'default' | 'garage' | 'racetrack';
+
+// 2. Definiujemy interfejs propsów
+interface SceneProps {
+  currentScene: SceneType;
+}
+
+// 3. Odbieramy currentScene z propsów funkcji
+export function Scene({ currentScene }: SceneProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
-  const currentScene = useConfigStore((state) => state.config.currentScene);
+
+  // UWAGA: Usunąłem linijkę z useConfigStore, ponieważ teraz currentScene przychodzi "z góry" (z App.tsx).
+  // Dzięki temu unikamy konfliktu nazw i błędu TypeScript.
+  
   const sceneConfig = sceneConfigs[currentScene];
 
   const resetCamera = () => {
@@ -30,9 +42,11 @@ export function Scene() {
   return (
     <div className="relative w-full h-full">
       <Canvas
+        // Używamy pozycji kamery z konfiguracji
         camera={{ position: sceneConfig.cameraPosition, fov: 50 }}
         shadows
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+        // Klucz wymusza odświeżenie Canvasu przy zmianie sceny
         key={currentScene}
       >
         <color attach="background" args={[sceneConfig.backgroundColor]} />
