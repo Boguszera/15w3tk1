@@ -57,7 +57,7 @@ export function CarModel() {
 
   // UWAGA: u Ciebie jest "frontligts" (literówka w GLB)
   const frontLightsObj = nodes['frontligts'] ?? nodes['frontlamps'];
-  const backLightsObj = nodes['backlamps'] ?? nodes['backlights'] ?? nodes['backligts'];
+  const backLightsObj = nodes['backlamps'];
 
   // Body material
   const bodyMaterial = useMemo(() => {
