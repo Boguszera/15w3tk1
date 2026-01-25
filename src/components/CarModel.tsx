@@ -46,7 +46,7 @@ function getFirstMeshMaterial(object: THREE.Object3D | undefined) {
 export function CarModel() {
   const config = useConfigStore((state) => state.config);
 
-  const { nodes } = useGLTF('/car_model.glb') as unknown as GLTFResult;
+  const { nodes } = useGLTF('./car_model.glb') as unknown as GLTFResult;
 
   // Poprawne nazwy z Twojego loga:
   const bodyObj = nodes['body'];
@@ -57,14 +57,7 @@ export function CarModel() {
 
   // UWAGA: u Ciebie jest "frontligts" (literówka w GLB)
   const frontLightsObj = nodes['frontligts'] ?? nodes['frontlamps'];
-   const backLightsObj = nodes['backlamps'] ?? nodes['geometry_0'];
-  
-  // Debug: warn if backlamps node is not found with primary name
-  if (!nodes['backlamps'] && !nodes['geometry_0']) {
-    console.warn('Back lamps node not found in model. Available nodes:', Object.keys(nodes));
-  } else if (!nodes['backlamps']) {
-    console.info('Using geometry_0 as fallback for back lamps');
-  }
+  const backLightsObj = nodes['backlamps'] ?? nodes['backlights'] ?? nodes['backligts'];
 
   // Body material
   const bodyMaterial = useMemo(() => {
@@ -216,4 +209,4 @@ export function CarModel() {
   );
 }
 
-useGLTF.preload('/car_model.glb');
+useGLTF.preload('./car_model.glb');
