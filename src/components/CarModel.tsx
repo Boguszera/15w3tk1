@@ -57,7 +57,14 @@ export function CarModel() {
 
   // UWAGA: u Ciebie jest "frontligts" (literówka w GLB)
   const frontLightsObj = nodes['frontligts'] ?? nodes['frontlamps'];
-  const backLightsObj = nodes['backlamps'] ?? nodes['backlights'] ?? nodes['backligts'];
+   const backLightsObj = nodes['backlamps'] ?? nodes['geometry_0'];
+  
+  // Debug: warn if backlamps node is not found with primary name
+  if (!nodes['backlamps'] && !nodes['geometry_0']) {
+    console.warn('Back lamps node not found in model. Available nodes:', Object.keys(nodes));
+  } else if (!nodes['backlamps']) {
+    console.info('Using geometry_0 as fallback for back lamps');
+  }
 
   // Body material
   const bodyMaterial = useMemo(() => {
@@ -134,13 +141,13 @@ export function CarModel() {
   }, [config.frontLampsOn, config.frontLampsIntensity, config.frontLampsColor]);
 
   const backLampMaterial = useMemo(() => {
-    const intensity = config.backLampsOn ? config.backLampsIntensity : 0;
-    return new THREE.MeshStandardMaterial({
-      color: config.backLampsColor,
-      emissive: config.backLampsColor,
-      emissiveIntensity: intensity,
-    });
-  }, [config.backLampsOn, config.backLampsIntensity, config.backLampsColor]);
+  const intensity = config.backLampsOn ? Math.max(0.5, config.backLampsIntensity) : 0;
+  return new THREE.MeshStandardMaterial({
+    color: config.backLampsColor,
+    emissive: config.backLampsColor,
+    emissiveIntensity: intensity,
+  });
+}, [config.backLampsOn, config.backLampsIntensity, config.backLampsColor]);
 
   // Przypinamy materiały do całych "grup" (rekurencyjnie do mesh children)
   useEffect(() => {
