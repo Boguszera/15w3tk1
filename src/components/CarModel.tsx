@@ -184,6 +184,14 @@ export function CarModel() {
 
   useEffect(() => {
     bodyMatRef.current = getFirstMeshMaterial(bodyObj) ?? undefined;
+    
+    // Set spotlight targets to point at the car (origin)
+    if (spotLight1Ref.current) {
+      spotLight1Ref.current.target.position.set(0, 0, 0);
+    }
+    if (spotLight2Ref.current) {
+      spotLight2Ref.current.target.position.set(0, 0, 0);
+    }
   }, [bodyObj]);
 
   useFrame((state) => {
@@ -192,28 +200,27 @@ export function CarModel() {
     const target = new THREE.Color(config.bodyColor);
     mat.color.lerp(target, 0.1);
     
-    // Smooth Y-axis rotation
-    if (groupRef.current) {
-      groupRef.current.rotation.y += 0.003; // Smooth rotation speed
-    }
-    
     // Dynamic scale animation (breathing effect)
+    // Scale varies by ±2% (0.02) at 0.5 Hz frequency for subtle animation
     if (groupRef.current) {
       const breathingScale = 1 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
       groupRef.current.scale.set(breathingScale, breathingScale, breathingScale);
     }
     
     // Dynamic lighting - moving spotlights
+    // Two spotlights orbit horizontally around the car in opposite directions
     if (spotLight1Ref.current && spotLight2Ref.current) {
       const time = state.clock.elapsedTime;
-      // First spotlight orbits around the car
+      // First spotlight orbits at 0.5 rad/s
       spotLight1Ref.current.position.x = Math.cos(time * 0.5) * 5;
       spotLight1Ref.current.position.z = Math.sin(time * 0.5) * 5;
+      // Intensity pulses between 1.0 and 2.0 at 2 Hz
       spotLight1Ref.current.intensity = 1.5 + Math.sin(time * 2) * 0.5;
       
-      // Second spotlight orbits in opposite direction
+      // Second spotlight orbits in opposite direction at 0.5 rad/s
       spotLight2Ref.current.position.x = Math.cos(time * -0.5) * 5;
       spotLight2Ref.current.position.z = Math.sin(time * -0.5) * 5;
+      // Intensity pulses between 1.0 and 2.0 at 2 Hz (phase shifted)
       spotLight2Ref.current.intensity = 1.5 + Math.cos(time * 2) * 0.5;
     }
   });
@@ -227,6 +234,7 @@ export function CarModel() {
   return (
     <group ref={groupRef}>
       {/* Dynamic spotlights for cinematic effect */}
+      {/* Note: Spotlights automatically point at origin [0,0,0] where the car is positioned */}
       <spotLight
         ref={spotLight1Ref}
         position={[5, 5, 0]}
@@ -235,7 +243,6 @@ export function CarModel() {
         intensity={1.5}
         castShadow
         color="#ffffff"
-        target-position={[0, 0, 0]}
       />
       <spotLight
         ref={spotLight2Ref}
@@ -245,7 +252,6 @@ export function CarModel() {
         intensity={1.5}
         castShadow
         color="#aaddff"
-        target-position={[0, 0, 0]}
       />
       
       {bodyObj && <primitive object={bodyObj} />}

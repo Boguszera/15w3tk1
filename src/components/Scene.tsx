@@ -105,7 +105,9 @@ export function Scene({ currentScene }: SceneProps) {
           far={4}
         />
         
-        {/* Camera controls */}
+        {/* Camera controls with auto-rotate for dynamic presentation */}
+        {/* Auto-rotate speed of 1.0 provides slow, cinematic camera movement */}
+        {/* Users can manually override by interacting with the controls */}
         <OrbitControls
           ref={controlsRef}
           enablePan={true}
