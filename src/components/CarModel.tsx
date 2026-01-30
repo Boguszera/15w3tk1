@@ -181,46 +181,49 @@ export function CarModel() {
   // Smooth transition dla koloru karoserii:
   // lerpujemy kolor na pierwszym MeshStandardMaterial znalezionym w body
   const bodyMatRef = useRef<THREE.MeshStandardMaterial | undefined>(undefined);
+  const targetColorRef = useRef(new THREE.Color());
 
   useEffect(() => {
     bodyMatRef.current = getFirstMeshMaterial(bodyObj) ?? undefined;
     
-    // Set spotlight targets to point at the car (origin)
+    // Configure spotlight targets to point at the car's position (origin)
     if (spotLight1Ref.current) {
       spotLight1Ref.current.target.position.set(0, 0, 0);
+      spotLight1Ref.current.target.updateMatrixWorld();
     }
     if (spotLight2Ref.current) {
       spotLight2Ref.current.target.position.set(0, 0, 0);
+      spotLight2Ref.current.target.updateMatrixWorld();
     }
   }, [bodyObj]);
 
   useFrame((state) => {
     const mat = bodyMatRef.current;
     if (!mat) return;
-    const target = new THREE.Color(config.bodyColor);
-    mat.color.lerp(target, 0.1);
+    targetColorRef.current.set(config.bodyColor);
+    mat.color.lerp(targetColorRef.current, 0.1);
     
     // Dynamic scale animation (breathing effect)
-    // Scale varies by ±2% (0.02) at 0.5 Hz frequency for subtle animation
+    // Scale varies by ±2% (0.02) at ~0.08 Hz (0.5 rad/s) for very subtle animation
     if (groupRef.current) {
       const breathingScale = 1 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
       groupRef.current.scale.set(breathingScale, breathingScale, breathingScale);
     }
     
     // Dynamic lighting - moving spotlights
-    // Two spotlights orbit horizontally around the car in opposite directions
+    // Two spotlights orbit horizontally around the car in opposite directions at fixed height
     if (spotLight1Ref.current && spotLight2Ref.current) {
       const time = state.clock.elapsedTime;
-      // First spotlight orbits at 0.5 rad/s
+      // First spotlight orbits at 0.5 rad/s (~0.08 Hz)
       spotLight1Ref.current.position.x = Math.cos(time * 0.5) * 5;
       spotLight1Ref.current.position.z = Math.sin(time * 0.5) * 5;
-      // Intensity pulses between 1.0 and 2.0 at 2 Hz
+      // Intensity pulses between 1.0 and 2.0 at 2 rad/s (~0.32 Hz)
       spotLight1Ref.current.intensity = 1.5 + Math.sin(time * 2) * 0.5;
       
-      // Second spotlight orbits in opposite direction at 0.5 rad/s
+      // Second spotlight orbits in opposite direction at 0.5 rad/s (~0.08 Hz)
       spotLight2Ref.current.position.x = Math.cos(time * -0.5) * 5;
       spotLight2Ref.current.position.z = Math.sin(time * -0.5) * 5;
-      // Intensity pulses between 1.0 and 2.0 at 2 Hz (phase shifted)
+      // Intensity pulses between 1.0 and 2.0 at 2 rad/s (~0.32 Hz, phase shifted by π/2)
       spotLight2Ref.current.intensity = 1.5 + Math.cos(time * 2) * 0.5;
     }
   });
@@ -232,9 +235,9 @@ export function CarModel() {
 
   // Renderujemy obiekty jako primitive (bo to mogą być Group, nie Mesh)
   return (
-    <group ref={groupRef}>
-      {/* Dynamic spotlights for cinematic effect */}
-      {/* Note: Spotlights automatically point at origin [0,0,0] where the car is positioned */}
+    <>
+      {/* Dynamic spotlights for cinematic effect - placed outside the animated group */}
+      {/* Spotlights orbit at fixed world positions and point at the car */}
       <spotLight
         ref={spotLight1Ref}
         position={[5, 5, 0]}
@@ -254,16 +257,18 @@ export function CarModel() {
         color="#aaddff"
       />
       
-      {bodyObj && <primitive object={bodyObj} />}
-      {wheelsObj && <primitive object={wheelsObj} />}
-      {windowsObj && <primitive object={windowsObj} />}
-      {metalObj && <primitive object={metalObj} />}
+      <group ref={groupRef}>
+        {bodyObj && <primitive object={bodyObj} />}
+        {wheelsObj && <primitive object={wheelsObj} />}
+        {windowsObj && <primitive object={windowsObj} />}
+        {metalObj && <primitive object={metalObj} />}
 
-      {frontLightsObj && <primitive object={frontLightsObj} />}
-      {backLightsObj && <primitive object={backLightsObj} />}
+        {frontLightsObj && <primitive object={frontLightsObj} />}
+        {backLightsObj && <primitive object={backLightsObj} />}
 
-      {config.spoilerVisible && spoilerObj && <primitive object={spoilerObj} />}
-    </group>
+        {config.spoilerVisible && spoilerObj && <primitive object={spoilerObj} />}
+      </group>
+    </>
   );
 }
 
