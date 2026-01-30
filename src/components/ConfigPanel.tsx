@@ -1,9 +1,33 @@
 import { useConfigStore } from '../store/configStore';
+import { motion } from 'framer-motion';
+import { soundManager } from '../utils/soundManager';
+import { useEffect } from 'react';
 
 export function ConfigPanel() {
   const config = useConfigStore((state) => state.config);
   const updateConfig = useConfigStore((state) => state.updateConfig);
   const resetConfig = useConfigStore((state) => state.resetConfig);
+
+  // Initialize sounds once on mount
+  useEffect(() => {
+    soundManager.initializeSounds();
+    
+    // Cleanup on unmount
+    return () => {
+      soundManager.cleanup();
+    };
+  }, []);
+
+  // Play ambient sound when in garage scene
+  useEffect(() => {
+    soundManager.toggleAmbient(config.currentScene === 'garage');
+  }, [config.currentScene]);
+
+  // Helper function to handle button clicks with sound
+  const handleButtonClick = (action: () => void) => {
+    soundManager.playButtonClick();
+    action();
+  };
 
   return (
     <div className="w-full sm:w-96 h-full bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white overflow-y-auto shadow-2xl border-r border-gray-800 custom-scrollbar animate-slide-in">
@@ -17,55 +41,65 @@ export function ConfigPanel() {
             <p className="text-sm text-gray-400 mt-1">Customize your dream car</p>
           </div>
           <button
-            onClick={resetConfig}
-            className="text-sm bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
+            onClick={() => handleButtonClick(resetConfig)}
+            className="text-sm bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-red-500/50 hover:shadow-red-500/70 font-semibold"
           >
             Reset
           </button>
         </div>
 
         {/* Scene Selection */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">🌍</span> Scene
           </h3>
           
           <div className="flex gap-3">
             <button
-              onClick={() => updateConfig({ currentScene: 'default' })}
-              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+              onClick={() => handleButtonClick(() => updateConfig({ currentScene: 'default' }))}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                 config.currentScene === 'default'
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
               }`}
             >
               Default
             </button>
             <button
-              onClick={() => updateConfig({ currentScene: 'garage' })}
-              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+              onClick={() => handleButtonClick(() => updateConfig({ currentScene: 'garage' }))}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                 config.currentScene === 'garage'
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
               }`}
             >
               Garage
             </button>
             <button
-              onClick={() => updateConfig({ currentScene: 'racetrack' })}
-              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+              onClick={() => handleButtonClick(() => updateConfig({ currentScene: 'racetrack' }))}
+              className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                 config.currentScene === 'racetrack'
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
               }`}
             >
               Racetrack
             </button>
           </div>
-        </section>
+        </motion.section>
 
         {/* Body Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">🎨</span> Body
           </h3>
@@ -84,31 +118,36 @@ export function ConfigPanel() {
             <label className="block text-sm font-medium text-gray-300">Material Finish</label>
             <div className="flex gap-3">
               <button
-                onClick={() => updateConfig({ bodyMaterial: 'matte' })}
-                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                onClick={() => handleButtonClick(() => updateConfig({ bodyMaterial: 'matte' }))}
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                   config.bodyMaterial === 'matte'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Matte
               </button>
               <button
-                onClick={() => updateConfig({ bodyMaterial: 'glossy' })}
-                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                onClick={() => handleButtonClick(() => updateConfig({ bodyMaterial: 'glossy' }))}
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                   config.bodyMaterial === 'glossy'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Glossy
               </button>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Wheels Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">⚙️</span> Wheels
           </h3>
@@ -122,10 +161,15 @@ export function ConfigPanel() {
               className="w-full h-12 rounded-lg cursor-pointer"
             />
           </div>
-        </section>
+        </motion.section>
 
         {/* Front Lamps Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">💡</span> Front Lamps
           </h3>
@@ -133,7 +177,7 @@ export function ConfigPanel() {
           <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
             <label className="text-sm font-medium text-gray-300">Lights On</label>
             <button
-              onClick={() => updateConfig({ frontLampsOn: !config.frontLampsOn })}
+              onClick={() => handleButtonClick(() => updateConfig({ frontLampsOn: !config.frontLampsOn }))}
               className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
                 config.frontLampsOn ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/50' : 'bg-gray-700'
               }`}
@@ -176,10 +220,15 @@ export function ConfigPanel() {
               </div>
             </div>
           )}
-        </section>
+        </motion.section>
 
         {/* Back Lamps Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">🔴</span> Back Lamps
           </h3>
@@ -187,7 +236,7 @@ export function ConfigPanel() {
           <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
             <label className="text-sm font-medium text-gray-300">Lights On</label>
             <button
-              onClick={() => updateConfig({ backLampsOn: !config.backLampsOn })}
+              onClick={() => handleButtonClick(() => updateConfig({ backLampsOn: !config.backLampsOn }))}
               className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
                 config.backLampsOn ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/50' : 'bg-gray-700'
               }`}
@@ -230,10 +279,15 @@ export function ConfigPanel() {
               </div>
             </div>
           )}
-        </section>
+        </motion.section>
 
         {/* Windows Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">🪟</span> Windows
           </h3>
@@ -259,31 +313,36 @@ export function ConfigPanel() {
             <label className="block text-sm font-medium text-gray-300">Window Tint</label>
             <div className="flex gap-3">
               <button
-                onClick={() => updateConfig({ windowTint: 'clear' })}
-                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                onClick={() => handleButtonClick(() => updateConfig({ windowTint: 'clear' }))}
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                   config.windowTint === 'clear'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Clear
               </button>
               <button
-                onClick={() => updateConfig({ windowTint: 'tinted' })}
-                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold ${
+                onClick={() => handleButtonClick(() => updateConfig({ windowTint: 'tinted' }))}
+                className={`flex-1 py-3 px-4 rounded-lg transition-all duration-300 font-semibold hover:scale-105 ${
                   config.windowTint === 'tinted'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Tinted
               </button>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Spoiler Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">🏎️</span> Spoiler
           </h3>
@@ -291,7 +350,7 @@ export function ConfigPanel() {
           <div className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg">
             <label className="text-sm font-medium text-gray-300">Visible</label>
             <button
-              onClick={() => updateConfig({ spoilerVisible: !config.spoilerVisible })}
+              onClick={() => handleButtonClick(() => updateConfig({ spoilerVisible: !config.spoilerVisible }))}
               className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
                 config.spoilerVisible ? 'bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg shadow-green-500/50' : 'bg-gray-700'
               }`}
@@ -309,31 +368,31 @@ export function ConfigPanel() {
               <label className="block text-sm font-medium text-gray-300">Spoiler Color</label>
               <div className="grid grid-cols-3 gap-2">
                 <button
-                  onClick={() => updateConfig({ spoilerColor: 'body' })}
-                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
+                  onClick={() => handleButtonClick(() => updateConfig({ spoilerColor: 'body' }))}
+                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm hover:scale-105 ${
                     config.spoilerColor === 'body'
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                   }`}
                 >
                   Body
                 </button>
                 <button
-                  onClick={() => updateConfig({ spoilerColor: 'carbon' })}
-                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
+                  onClick={() => handleButtonClick(() => updateConfig({ spoilerColor: 'carbon' }))}
+                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm hover:scale-105 ${
                     config.spoilerColor === 'carbon'
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                   }`}
                 >
                   Carbon
                 </button>
                 <button
-                  onClick={() => updateConfig({ spoilerColor: 'black' })}
-                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
+                  onClick={() => handleButtonClick(() => updateConfig({ spoilerColor: 'black' }))}
+                  className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm hover:scale-105 ${
                     config.spoilerColor === 'black'
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                      : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                   }`}
                 >
                   Black
@@ -341,10 +400,15 @@ export function ConfigPanel() {
               </div>
             </div>
           )}
-        </section>
+        </motion.section>
 
         {/* Metal Elements Section */}
-        <section className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 mb-6">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 mb-6"
+        >
           <h3 className="text-xl font-bold bg-gradient-to-r from-gray-300 to-gray-400 bg-clip-text text-transparent flex items-center gap-2">
             <span className="text-2xl">⚡</span> Metal Elements
           </h3>
@@ -353,31 +417,31 @@ export function ConfigPanel() {
             <label className="block text-sm font-medium text-gray-300">Material Type</label>
             <div className="grid grid-cols-3 gap-2">
               <button
-                onClick={() => updateConfig({ metalType: 'chrome' })}
-                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
+                onClick={() => handleButtonClick(() => updateConfig({ metalType: 'chrome' }))}
+                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm hover:scale-105 ${
                   config.metalType === 'chrome'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Chrome
               </button>
               <button
-                onClick={() => updateConfig({ metalType: 'brushed' })}
-                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
+                onClick={() => handleButtonClick(() => updateConfig({ metalType: 'brushed' }))}
+                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm hover:scale-105 ${
                   config.metalType === 'brushed'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Brushed
               </button>
               <button
-                onClick={() => updateConfig({ metalType: 'black' })}
-                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm ${
+                onClick={() => handleButtonClick(() => updateConfig({ metalType: 'black' }))}
+                className={`py-3 px-3 rounded-lg transition-all duration-300 font-semibold text-sm hover:scale-105 ${
                   config.metalType === 'black'
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-glow scale-105'
-                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-700 hover:backdrop-blur-lg'
                 }`}
               >
                 Black
@@ -418,7 +482,7 @@ export function ConfigPanel() {
               className="w-full"
             />
           </div>
-        </section>
+        </motion.section>
       </div>
     </div>
   );
