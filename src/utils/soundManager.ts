@@ -10,13 +10,13 @@ class SoundManager {
     try {
       const audio = new Audio();
       this.enabled = audio !== null;
-    } catch (e) {
+    } catch {
       this.enabled = false;
     }
   }
 
   // Initialize a sound
-  private initSound(key: string, src: string, options: any = {}) {
+  private initSound(key: string, src: string, options: Record<string, unknown> = {}) {
     if (!this.enabled) return null;
 
     try {
@@ -29,8 +29,8 @@ class SoundManager {
       });
       this.sounds.set(key, sound);
       return sound;
-    } catch (e) {
-      console.warn(`Error initializing sound: ${src}`, e);
+    } catch (error) {
+      console.warn(`Error initializing sound: ${src}`, error);
       return null;
     }
   }
