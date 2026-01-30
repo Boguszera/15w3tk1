@@ -47,6 +47,11 @@ export function CarModel() {
   const config = useConfigStore((state) => state.config);
 
   const { nodes } = useGLTF('./car_model.glb') as unknown as GLTFResult;
+  
+  // References for animations
+  const groupRef = useRef<THREE.Group>(null);
+  const spotLight1Ref = useRef<THREE.SpotLight>(null);
+  const spotLight2Ref = useRef<THREE.SpotLight>(null);
 
   // Poprawne nazwy z Twojego loga:
   const bodyObj = nodes['body'];
@@ -181,11 +186,36 @@ export function CarModel() {
     bodyMatRef.current = getFirstMeshMaterial(bodyObj) ?? undefined;
   }, [bodyObj]);
 
-  useFrame(() => {
+  useFrame((state) => {
     const mat = bodyMatRef.current;
     if (!mat) return;
     const target = new THREE.Color(config.bodyColor);
     mat.color.lerp(target, 0.1);
+    
+    // Smooth Y-axis rotation
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.003; // Smooth rotation speed
+    }
+    
+    // Dynamic scale animation (breathing effect)
+    if (groupRef.current) {
+      const breathingScale = 1 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
+      groupRef.current.scale.set(breathingScale, breathingScale, breathingScale);
+    }
+    
+    // Dynamic lighting - moving spotlights
+    if (spotLight1Ref.current && spotLight2Ref.current) {
+      const time = state.clock.elapsedTime;
+      // First spotlight orbits around the car
+      spotLight1Ref.current.position.x = Math.cos(time * 0.5) * 5;
+      spotLight1Ref.current.position.z = Math.sin(time * 0.5) * 5;
+      spotLight1Ref.current.intensity = 1.5 + Math.sin(time * 2) * 0.5;
+      
+      // Second spotlight orbits in opposite direction
+      spotLight2Ref.current.position.x = Math.cos(time * -0.5) * 5;
+      spotLight2Ref.current.position.z = Math.sin(time * -0.5) * 5;
+      spotLight2Ref.current.intensity = 1.5 + Math.cos(time * 2) * 0.5;
+    }
   });
 
   // Debug (możesz potem usunąć)
@@ -195,7 +225,29 @@ export function CarModel() {
 
   // Renderujemy obiekty jako primitive (bo to mogą być Group, nie Mesh)
   return (
-    <group>
+    <group ref={groupRef}>
+      {/* Dynamic spotlights for cinematic effect */}
+      <spotLight
+        ref={spotLight1Ref}
+        position={[5, 5, 0]}
+        angle={0.6}
+        penumbra={0.5}
+        intensity={1.5}
+        castShadow
+        color="#ffffff"
+        target-position={[0, 0, 0]}
+      />
+      <spotLight
+        ref={spotLight2Ref}
+        position={[-5, 5, 0]}
+        angle={0.6}
+        penumbra={0.5}
+        intensity={1.5}
+        castShadow
+        color="#aaddff"
+        target-position={[0, 0, 0]}
+      />
+      
       {bodyObj && <primitive object={bodyObj} />}
       {wheelsObj && <primitive object={wheelsObj} />}
       {windowsObj && <primitive object={windowsObj} />}

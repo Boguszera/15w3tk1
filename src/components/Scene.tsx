@@ -111,6 +111,8 @@ export function Scene({ currentScene }: SceneProps) {
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
+          autoRotate={true}
+          autoRotateSpeed={1.0}
           minDistance={3}
           maxDistance={20}
           minPolarAngle={0}
