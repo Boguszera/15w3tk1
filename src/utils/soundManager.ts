@@ -4,6 +4,7 @@ import { Howl } from 'howler';
 class SoundManager {
   private sounds: Map<string, Howl> = new Map();
   private enabled: boolean = true;
+  private initialized: boolean = false;
 
   constructor() {
     // Check if audio is supported
@@ -16,7 +17,7 @@ class SoundManager {
   }
 
   // Initialize a sound
-  private initSound(key: string, src: string, options: Record<string, unknown> = {}) {
+  private initSound(key: string, src: string, options: Record<string, unknown> = {}): Howl | null {
     if (!this.enabled) return null;
 
     try {
@@ -43,8 +44,8 @@ class SoundManager {
     if (sound) {
       try {
         sound.play();
-      } catch (e) {
-        console.warn(`Error playing sound: ${key}`, e);
+      } catch (error) {
+        console.warn(`Error playing sound: ${key}`, error);
       }
     }
   }
@@ -59,20 +60,20 @@ class SoundManager {
     }
   }
 
-  // Initialize button click sound
-  initButtonClick() {
-    return this.initSound('buttonClick', '/sounds/click.mp3', {
+  // Initialize all sounds (called once)
+  initializeSounds() {
+    if (this.initialized) return;
+    
+    this.initSound('buttonClick', '/sounds/click.mp3', {
       volume: 0.5,
     });
-  }
 
-  // Initialize ambient garage sound
-  initAmbient() {
-    return this.initSound('ambient', '/sounds/garage-ambient.mp3', {
-      autoplay: true,
+    this.initSound('ambient', '/sounds/garage-ambient.mp3', {
       loop: true,
       volume: 0.3,
     });
+
+    this.initialized = true;
   }
 
   // Play button click sound
@@ -95,6 +96,15 @@ class SoundManager {
     if (sound) {
       sound.volume(volume);
     }
+  }
+
+  // Cleanup method to unload all sounds
+  cleanup() {
+    this.sounds.forEach((sound) => {
+      sound.unload();
+    });
+    this.sounds.clear();
+    this.initialized = false;
   }
 }
 

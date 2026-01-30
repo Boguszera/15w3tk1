@@ -8,10 +8,14 @@ export function ConfigPanel() {
   const updateConfig = useConfigStore((state) => state.updateConfig);
   const resetConfig = useConfigStore((state) => state.resetConfig);
 
-  // Initialize sounds on mount
+  // Initialize sounds once on mount
   useEffect(() => {
-    soundManager.initButtonClick();
-    soundManager.initAmbient();
+    soundManager.initializeSounds();
+    
+    // Cleanup on unmount
+    return () => {
+      soundManager.cleanup();
+    };
   }, []);
 
   // Play ambient sound when in garage scene
