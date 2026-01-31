@@ -48,6 +48,7 @@ An interactive web-based 3D car configurator built with React, TypeScript, and T
 - **Reset Function**: Restore default configuration
 - **Loading Screen**: Displays progress during initialization
 - **Fullscreen Mode**: Expand to fullscreen for immersive experience
+- **Sounds**: For clicks and Racetrack and Garage scenes
 
 ## Technology Stack
 
@@ -78,19 +79,50 @@ npm run preview
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── CarModel.tsx        # 3D car model with all customizable parts
-│   ├── Scene.tsx           # 3D scene setup with lighting and camera
-│   ├── ConfigPanel.tsx     # UI configuration panel
-│   └── LoadingScreen.tsx   # Loading screen component
-├── store/
-│   └── configStore.ts      # Zustand store for configuration state
-├── types/
-│   └── CarConfiguration.ts # TypeScript types and interfaces
-├── App.tsx                 # Main application component
-├── main.tsx                # Application entry point
-└── index.css               # Global styles with Tailwind
+15w3tk1/
+├── .github
+│   └── workflows
+│       └── deploy.yml          # CD configuration. Automates deployment (e.g., to GitHub Pages) after every code push.
+├── .gitignore                  
+├── README.md                   
+├── eslint.config.js            # Linter configuration - ensures code quality and catches syntax errors.
+├── index.html                  # Main entry point. This is where Vite "injects" your React code.
+├── package-lock.json           # Versions of installed dependencies (ensures the project runs the same way for everyone).
+├── package.json                # Listt of dependencies (React, Three.js, Tailwind) and scripts (dev, build).
+├── postcss.config.js           # CSS processor configuration - required for Tailwind CSS to work correctly.
+├── public                      # Static files 
+│   ├── car_model.glb           # 3D car model (glTF binary format). 
+│   ├── sounds                  
+│   │   ├── click.mp3           
+│   │   ├── garage-ambient.mp3  
+│   │   └── racetrack-ambient.mp3 
+│   └── vite.svg                
+├── src                         
+│   ├── App.css                 # Global CSS styles 
+│   ├── App.tsx                 # Main component tying the logic together
+│   ├── assets                  
+│   │   └── react.svg
+│   ├── components              
+│   │   ├── CarModel.tsx        # 3D Component. Loads the .glb file, applies materials, and reacts to configuration changes.
+│   │   ├── ConfigPanel.tsx     # UI (HTML Overlay). Menu with buttons to change colors, wheels, windows, etc.
+│   │   ├── GarageScene.tsx     # 3D Environment component for garage
+│   │   ├── LoadingScreen.tsx   
+│   │   ├── RacetrackScene.tsx  
+│   │   └── Scene.tsx           # Wrapper for the React Three Fiber <Canvas>. Sets up the camera and rendering.
+│   ├── index.css               # Entry point for Tailwind styles 
+│   ├── main.tsx                # The file that mounts the React app to the #root element in index.html.
+│   ├── store                   
+│   │   └── configStore.ts      # Stores the current car state:
+│   ├── types                   
+│   │   └── CarConfiguration.ts # Interfaces defining which configuration options are allowed.
+│   └── utils                   .
+│       └── soundManager.ts     # Logic for audio playback
+├── gh_structure_printer.py     # Print project structure
+├── tailwind.config.js          # Tailwind CSS configuration
+├── tsconfig.app.json           # TypeScript configuration specific to the application code.
+├── tsconfig.json               # Main TypeScript compiler configuration.
+├── tsconfig.node.json          # TypeScript configuration for config files
+└── vite.config.ts              # Vite bundler configuration (plugins, path aliases).
 ```
 
 ## Usage
