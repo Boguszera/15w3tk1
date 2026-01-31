@@ -64,16 +64,16 @@ class SoundManager {
   initializeSounds() {
     if (this.initialized) return;
     
-    this.initSound('buttonClick', '/sounds/click.mp3', {
+    this.initSound('buttonClick', './sounds/click.mp3', {
       volume: 0.5,
     });
 
-    this.initSound('ambient', '/sounds/garage-ambient.mp3', {
+    this.initSound('ambient', './sounds/garage-ambient.mp3', {
       loop: true,
       volume: 0.3,
     });
 
-    this.initSound('racetrackAmbient', '/sounds/racetrack-ambient.mp3', {
+    this.initSound('racetrackAmbient', './sounds/racetrack-ambient.mp3', {
       loop: true,
       volume: 0.3,
     });
