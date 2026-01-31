@@ -21,6 +21,7 @@ export function ConfigPanel() {
   // Play ambient sound when in garage scene
   useEffect(() => {
     soundManager.toggleAmbient(config.currentScene === 'garage');
+    soundManager.toggleRacetrackAmbient(config.currentScene === 'racetrack');
   }, [config.currentScene]);
 
   // Helper function to handle button clicks with sound

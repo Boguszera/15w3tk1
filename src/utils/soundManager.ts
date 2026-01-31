@@ -73,6 +73,11 @@ class SoundManager {
       volume: 0.3,
     });
 
+    this.initSound('racetrackAmbient', '/sounds/racetrack-ambient.mp3', {
+      loop: true,
+      volume: 0.3,
+    });
+
     this.initialized = true;
   }
 
@@ -87,6 +92,15 @@ class SoundManager {
       this.play('ambient');
     } else {
       this.stop('ambient');
+    }
+  }
+
+  // Toggle racetrack ambient sound
+  toggleRacetrackAmbient(play: boolean) {
+    if (play) {
+      this.play('racetrackAmbient');
+    } else {
+      this.stop('racetrackAmbient');
     }
   }
 
