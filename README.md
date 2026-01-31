@@ -118,6 +118,7 @@ npm run preview
 │   └── utils                   .
 │       └── soundManager.ts     # Logic for audio playback
 ├── gh_structure_printer.py     # Print project structure
+├── car_model.blend     		# 3D Car model project in Blender 
 ├── tailwind.config.js          # Tailwind CSS configuration
 ├── tsconfig.app.json           # TypeScript configuration specific to the application code.
 ├── tsconfig.json               # Main TypeScript compiler configuration.
