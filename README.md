@@ -118,7 +118,8 @@ npm run preview
 │   └── utils                   .
 │       └── soundManager.ts     # Logic for audio playback
 ├── gh_structure_printer.py     # Print project structure
-├── car_model.blend     		# 3D Car model project in Blender 
+├── car_model.blend     		  # 3D Car model project in Blender 
+├── car_workflow.json     		  # ComfyUI Workflow to generate car references 
 ├── tailwind.config.js          # Tailwind CSS configuration
 ├── tsconfig.app.json           # TypeScript configuration specific to the application code.
 ├── tsconfig.json               # Main TypeScript compiler configuration.
@@ -165,6 +166,20 @@ The application is optimized to run at 60 FPS on desktop devices:
 - Modern browsers with WebGL support
 - Tested on Chrome, Firefox, Safari, and Edge
 - Desktop-first design (mobile support can be added)
+
+## 🔧 Workflow Installation
+
+To import the workflow into ComfyUI directly from this repository:
+
+1. Ensure you are in the project's root directory.
+2. Run the following command to copy the file to the ComfyUI folder:
+
+```bash
+# Copy the workflow from the repository to ComfyUI
+cp ./car_workflow.json ~/ComfyUI/user/default/workflows/
+```
+
+3. In the ComfyUI interface, click "Refresh" (or press F5 to refresh the page).
 
 ## License
 
